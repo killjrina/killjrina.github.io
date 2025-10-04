@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Какое направление волонтерства мне подходит</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="header-decoration">✨</div>
+            <h1>Найди своё волонтерское призвание! 🎯</h1>
+            <p>Пройди тест и узнай, какое направление волонтерства тебе идеально подходит! 🚀</p>
+        </header>
+
+        <main>
+            <div class="quiz-container">
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress"></div>
+                    </div>
+                    <div class="question-count">Вопрос <span class="current">1</span> из <span class="total">10</span> 🌟</div>
+                </div>
+                
+                <div class="question-card">
+                    <div class="question"></div>
+                </div>
+                
+                <ul class="answers"></ul>
+                
+                <button class="next-btn" disabled>
+                    <span class="btn-text">Далее</span>
+                    <span class="btn-emoji">🎉</span>
+                </button>
+            </div>
+
+            <div class="result-container hidden">
+                <div class="result-header">
+                    <div class="result-emoji">🎊</div>
+                    <h2>Ура! Вот твой результат! 🏆</h2>
+                </div>
+                <div class="result-card">
+                    <div class="result-description"></div>
+                </div>
+                <button class="restart-btn">
+                    <span class="btn-text">Пройти еще раз</span>
+                    <span class="btn-emoji">🔄</span>
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/quiz_data.js"></script>
+    <script src="js/quiz_answer.js"></script>
+    <script src="js/quiz_code.js"></script>
+</body>
+</html>
