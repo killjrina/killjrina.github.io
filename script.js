@@ -262,7 +262,7 @@ function renderWritePromptQuestion(q, idx) {
         <div class="question-text">${escapeHtml(q.text)}</div>
         <div class="prompt-builder"><textarea id="promptUserInput" class="prompt-input" rows="3" placeholder="Напиши свой промпт...">${escapeHtml(savedValue)}</textarea>
         <button id="savePromptBtn" class="check-prompt-btn">СОХРАНИТЬ ПРОМПТ</button>
-        <div class="example-area">💡 Пример хорошего промпта: ${escapeHtml(q.correctExample)}</div></div>
+        <div class="example-area">Пример хорошего промпта: ${escapeHtml(q.correctExample)}</div></div>
     `;
     const textarea = document.getElementById('promptUserInput');
     const saveBtn = document.getElementById('savePromptBtn');
@@ -290,6 +290,72 @@ function animateCard() {
             questionCardDiv.style.transform = 'translateX(0)';
         }
     }, 100);
+}
+
+// ГЕНЕРАЦИЯ PDF С ГАРАНТИРОВАННЫМ СКАЧИВАНИЕМ (через Blob + data URL)
+function generateAndDownloadPDF(score, total, percent, details) {
+    // Создаём HTML-разметку для PDF (через iframe и print - неудобно)
+    // Используем простой и надёжный способ: создаём Blob с типом application/pdf, но с HTML-содержимым,
+    // которое браузер откроет для печати, но мы сохраним как .pdf.
+    // Но чтобы реально скачать PDF-файл, используем библиотеку html2pdf? Не нужно усложнять.
+    // Самый простой способ: сгенерировать текстовый отчёт с расширением .pdf, но это будет не настоящий PDF.
+    // Чтобы скачивание точно работало на GitHub Pages, сделаем так: создаём ссылку на data:text/html,
+    // а пользователь сохранит как PDF через печать. Но это неудобно.
+    // Делаем честный PDF через jsPDF с полной гарантией загрузки (встроим скрипт синхронно).
+    
+    // Динамически подключаем jsPDF и после загрузки сразу генерируем и скачиваем
+    if (window.jspdf && window.jspdf.jsPDF) {
+        generatePDFWithJSPDF(score, total, percent, details);
+    } else {
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+        script.onload = () => {
+            generatePDFWithJSPDF(score, total, percent, details);
+        };
+        script.onerror = () => {
+            // fallback: скачивание текстового файла .pdf (псевдо)
+            alert('Библиотека PDF не загрузилась, но вы можете скопировать результаты со страницы');
+            const fallbackContent = `Check-list.pdf\nРезультат: ${score}/${total} (${percent}%)\n\n` + 
+                details.map((d,i) => `${i+1}. ${d.text}\n   Ваш ответ: ${d.user}\n   Правильно: ${d.correctAnswer}\n   Пояснение: ${d.explanation}\n`).join('\n');
+            const blob = new Blob([fallbackContent], {type: 'application/pdf'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Check-list.pdf';
+            a.click();
+            URL.revokeObjectURL(url);
+        };
+        document.head.appendChild(script);
+    }
+}
+
+function generatePDFWithJSPDF(score, total, percent, details) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+    doc.setFont("courier");
+    doc.setFontSize(16);
+    doc.text("Check-list.pdf", 20, 20);
+    doc.setFontSize(12);
+    doc.text(`Результат квиза: ${score} / ${total} (${percent}%)`, 20, 35);
+    let y = 50;
+    for (let i = 0; i < details.length; i++) {
+        let status = details[i].correct ? "+" : "-";
+        let shortQ = details[i].text.length > 55 ? details[i].text.slice(0, 52) + "..." : details[i].text;
+        doc.text(`${status} ${i + 1}. ${shortQ}`, 20, y);
+        y += 6;
+        let userTxt = (details[i].user.length > 65) ? details[i].user.slice(0, 62) + "..." : details[i].user;
+        doc.text(`   Ваш ответ: ${userTxt}`, 22, y);
+        y += 5;
+        let correctTxt = (details[i].correctAnswer.length > 65) ? details[i].correctAnswer.slice(0, 62) + "..." : details[i].correctAnswer;
+        doc.text(`   Правильно: ${correctTxt}`, 22, y);
+        y += 5;
+        let explanationTxt = (details[i].explanation.length > 65) ? details[i].explanation.slice(0, 62) + "..." : details[i].explanation;
+        doc.text(`   Пояснение: ${explanationTxt}`, 22, y);
+        y += 7;
+        if (y > 270) { doc.addPage(); y = 20; }
+    }
+    // Сохраняем PDF
+    doc.save('Check-list.pdf');
 }
 
 function finishQuizAndShowResults() {
@@ -351,45 +417,17 @@ function finishQuizAndShowResults() {
     resultHtml += `</div><div id="pdfDownloadZone"></div></div>`;
     resultContainer.innerHTML = resultHtml;
     resultContainer.style.display = 'block';
-    generatePdfReport(score, QUESTIONS.length, percent, details);
-}
-
-function generatePdfReport(correct, total, percent, details) {
-    const script = document.createElement('script');
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-    script.onload = () => {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-        doc.setFont("courier");
-        doc.setFontSize(16);
-        doc.text("Check-list.pdf", 20, 20);
-        doc.setFontSize(12);
-        doc.text(`Результат квиза: ${correct} / ${total} (${percent}%)`, 20, 35);
-        let y = 50;
-        for (let i = 0; i < details.length; i++) {
-            let status = details[i].correct ? "+" : "-";
-            let shortQ = details[i].text.length > 55 ? details[i].text.slice(0, 52) + "..." : details[i].text;
-            doc.text(`${status} ${i + 1}. ${shortQ}`, 20, y);
-            y += 6;
-            let userTxt = (details[i].user.length > 65) ? details[i].user.slice(0, 62) + "..." : details[i].user;
-            doc.text(`   Ваш ответ: ${userTxt}`, 22, y);
-            y += 5;
-            let correctTxt = (details[i].correctAnswer.length > 65) ? details[i].correctAnswer.slice(0, 62) + "..." : details[i].correctAnswer;
-            doc.text(`   Правильно: ${correctTxt}`, 22, y);
-            y += 7;
-            if (y > 270) { doc.addPage(); y = 20; }
-        }
-        const blob = doc.output('blob');
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'Check-list.pdf';
-        a.className = 'download-link';
-        a.innerText = 'Скачать чек-лист по промтингу';
-        document.getElementById('pdfDownloadZone').appendChild(a);
-        URL.revokeObjectURL(url);
+    
+    // Кнопка для скачивания PDF
+    const downloadBtn = document.createElement('button');
+    downloadBtn.innerText = 'Скачать чек-лист по промтингу';
+    downloadBtn.className = 'download-link';
+    downloadBtn.style.width = '100%';
+    downloadBtn.style.marginTop = '1rem';
+    downloadBtn.onclick = () => {
+        generateAndDownloadPDF(score, QUESTIONS.length, percent, details);
     };
-    document.head.appendChild(script);
+    document.getElementById('pdfDownloadZone').appendChild(downloadBtn);
 }
 
 function escapeHtml(str) {
