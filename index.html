@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Квиз на тему: промтинг и нейросети</title>
+    <title>Квиз про нейросети</title>
     <style>
-        /* ---------- BRUTALIST / RETRO STYLE ---------- */
+        /* ---------- BRUTALIST / RETRO STYLE (УСИЛЕННЫЙ) ---------- */
         * {
             margin: 0;
             padding: 0;
@@ -13,62 +13,59 @@
         }
 
         body {
-            background: #f5f2e8;
-            background-image: repeating-linear-gradient(45deg, #e0dcd0 0px, #e0dcd0 2px, transparent 2px, transparent 8px);
+            background: #e9e2d0;
+            background-image: repeating-linear-gradient(0deg, #d6ceb8 1px, transparent 1px, transparent 12px);
             font-family: 'Courier New', 'Fira Code', 'IBM Plex Mono', monospace;
-            color: #1f1b13;
+            color: #1e1b15;
             padding: 2rem 1rem;
         }
 
-        /* main container – brutalist box */
         .quiz-container {
             max-width: 1100px;
             margin: 0 auto;
-            background: #fef7e0;
-            border: 4px solid #2c2b26;
-            box-shadow: 12px 12px 0 #4a3b2c;
-            padding: 1.5rem;
-            transition: box-shadow 0.2s ease;
+            background: #fef7e8;
+            border: 5px solid #1e1b15;
+            box-shadow: 14px 14px 0 #8b5a2b;
+            padding: 1.8rem;
+            transition: all 0.2s;
         }
 
-        /* headers */
         h1 {
-            font-size: 2.8rem;
+            font-size: 2.5rem;
             text-transform: uppercase;
-            letter-spacing: -2px;
-            border-bottom: 5px solid #d94f30;
+            letter-spacing: -3px;
+            border-bottom: 6px solid #c73f1e;
             display: inline-block;
-            margin-bottom: 0.5rem;
-            font-weight: 800;
-            color: #1f1b13;
-            text-shadow: 3px 3px 0 #cfc6af;
+            font-weight: 900;
+            color: #1e1b15;
+            text-shadow: 3px 3px 0 #cfc2a0;
         }
 
         .sub {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             text-transform: uppercase;
             font-weight: bold;
-            background: #1f1b13;
-            color: #fef7e0;
+            background: #1e1b15;
+            color: #fef7e8;
             display: inline-block;
-            padding: 0.2rem 0.8rem;
-            letter-spacing: 1px;
+            padding: 0.3rem 1rem;
+            letter-spacing: 2px;
             margin-bottom: 2rem;
+            margin-top: 0.5rem;
         }
 
-        /* progress bar (brutal) */
         .progress-area {
-            background: #e2dcca;
-            border: 2px solid #2c2b26;
+            background: #d9cfb0;
+            border: 3px solid #1e1b15;
             padding: 0.4rem;
             margin-bottom: 2rem;
         }
 
         .progress-bar {
-            background: #2c2b26;
-            height: 24px;
+            background: #c73f1e;
+            height: 26px;
             width: 0%;
-            transition: width 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            transition: width 0.25s cubic-bezier(0.3, 1, 0.5, 1);
         }
 
         .counter {
@@ -79,132 +76,209 @@
             font-family: monospace;
         }
 
-        /* question card */
         .question-card {
-            background: #fffbf0;
-            border: 3px solid #2c2b26;
-            padding: 1.5rem;
+            background: #fffcf0;
+            border: 3px solid #1e1b15;
+            padding: 1.8rem;
             margin-bottom: 2rem;
-            transition: opacity 0.2s ease, transform 0.2s ease;
-        }
-
-        .fade-exit {
-            opacity: 0;
-            transform: translateX(-10px);
+            transition: opacity 0.2s ease, transform 0.15s ease;
         }
 
         .question-text {
             font-size: 1.6rem;
             font-weight: 800;
             line-height: 1.3;
-            margin-bottom: 1.5rem;
-            text-transform: uppercase;
-            border-left: 12px solid #d94f30;
+            margin-bottom: 1.2rem;
+            border-left: 14px solid #c73f1e;
             padding-left: 1rem;
         }
 
-        /* options brutalist style */
+        /* стили для мемов и картинок */
+        .meme-area {
+            background: #2d2a24;
+            padding: 1rem;
+            margin: 1rem 0;
+            text-align: center;
+            border: 2px solid #c73f1e;
+        }
+        .meme-img {
+            max-width: 100%;
+            height: auto;
+            background: #000;
+            display: inline-block;
+            font-family: monospace;
+            color: #ffcf9a;
+        }
+        .ascii-meme {
+            font-family: monospace;
+            white-space: pre;
+            font-size: 0.7rem;
+            background: #1e1b15;
+            color: #fbc490;
+            padding: 0.8rem;
+            overflow-x: auto;
+        }
+
+        /* интерактив: перетаскивание слов, поле ввода промпта */
+        .drag-word-area, .prompt-builder {
+            background: #e7dfcb;
+            border: 2px dashed #1e1b15;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        .word-bank {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        .word-token {
+            background: #1e1b15;
+            color: #fef7e8;
+            padding: 8px 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.05s linear;
+            border: 2px solid #c73f1e;
+            user-select: none;
+        }
+        .word-token:active {
+            transform: scale(0.96);
+        }
+        .sentence-builder {
+            background: #fff3e0;
+            border: 2px solid #1e1b15;
+            min-height: 70px;
+            padding: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+        .placed-word {
+            background: #c73f1e;
+            color: white;
+            padding: 6px 14px;
+            font-weight: bold;
+            display: inline-flex;
+            gap: 8px;
+            align-items: center;
+            cursor: pointer;
+        }
+        .remove-word {
+            background: none;
+            border: none;
+            color: #ffc49b;
+            font-weight: bold;
+            margin-left: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .prompt-input {
+            width: 100%;
+            background: #1e1b15;
+            border: 3px solid #c73f1e;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 1rem;
+            color: #fdd49c;
+            margin: 10px 0;
+        }
+        .check-prompt-btn {
+            background: #2c2b26;
+            border: 2px solid #c73f1e;
+            padding: 8px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: monospace;
+        }
+
         .options-list {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 0.9rem;
             margin: 1.5rem 0;
         }
-
         .option {
-            background: #ece4d4;
-            border: 2px solid #2c2b26;
-            padding: 0.9rem 1rem;
+            background: #f0e8d8;
+            border: 2px solid #1e1b15;
+            padding: 0.8rem 1rem;
             cursor: pointer;
             font-weight: 600;
             transition: all 0.05s linear;
-            font-size: 1rem;
             display: flex;
             align-items: center;
             gap: 12px;
         }
-
         .option:hover {
-            background: #dbcfb8;
-            transform: translate(-3px, -3px);
-            box-shadow: 4px 4px 0 #2c2b26;
+            background: #e2d4bc;
+            transform: translate(-2px, -2px);
+            box-shadow: 3px 3px 0 #1e1b15;
         }
-
         .option.selected {
-            background: #2c2b26;
-            color: #fef7e0;
-            border-color: #d94f30;
-            box-shadow: none;
-            transform: translate(2px, 2px);
+            background: #1e1b15;
+            color: #fef7e8;
+            border-color: #c73f1e;
         }
-
         .option-prefix {
             font-weight: 800;
             font-size: 1.3rem;
             width: 32px;
-            display: inline-block;
         }
 
-        /* navigation buttons */
         .nav-buttons {
             display: flex;
             justify-content: space-between;
             margin: 2rem 0 1rem;
             gap: 1rem;
         }
-
         button {
-            background: #2c2b26;
+            background: #1e1b15;
             border: none;
             font-family: 'Courier New', monospace;
             font-weight: bold;
             font-size: 1.2rem;
             padding: 0.8rem 1.8rem;
-            color: #fef7e0;
+            color: #fef7e8;
             text-transform: uppercase;
             cursor: pointer;
-            transition: 0.1s linear;
-            border: 2px solid #d94f30;
-            letter-spacing: 1px;
+            transition: 0.05s linear;
+            border: 2px solid #c73f1e;
         }
-
         button:active {
             transform: translate(2px, 2px);
-            background: #d94f30;
-            border-color: #2c2b26;
+            background: #c73f1e;
+            border-color: #1e1b15;
         }
-
         button:disabled {
             opacity: 0.5;
             transform: none;
             cursor: not-allowed;
         }
-
         .result-area {
             margin-top: 2rem;
-            border-top: 4px double #2c2b26;
+            border-top: 4px double #1e1b15;
             padding-top: 1.8rem;
         }
-
         .score-block {
-            background: #2c2b26;
-            color: #fef7e0;
+            background: #1e1b15;
+            color: #fef7e8;
             padding: 1rem;
             text-align: center;
             font-size: 1.8rem;
             font-weight: bold;
             margin-bottom: 1.5rem;
         }
-
         .download-link {
             display: inline-block;
-            background: #d94f30;
-            color: #1f1b13;
+            background: #c73f1e;
+            color: #1e1b15;
             text-decoration: none;
             font-weight: 800;
             padding: 1rem 2rem;
             text-align: center;
-            border: 3px solid #2c2b26;
+            border: 3px solid #1e1b15;
             font-size: 1.3rem;
             text-transform: uppercase;
             transition: 0.1s;
@@ -212,195 +286,160 @@
             width: 100%;
             box-sizing: border-box;
         }
-
         .download-link:hover {
-            background: #bf3e21;
+            background: #a23216;
             transform: translate(-2px, -2px);
-            box-shadow: 6px 6px 0 #2c2b26;
+            box-shadow: 5px 5px 0 #1e1b15;
         }
-
         footer {
             margin-top: 2rem;
             font-size: 0.7rem;
             text-align: center;
-            border-top: 1px solid #c0b69c;
+            border-top: 1px solid #c7bb9b;
             padding-top: 1rem;
-            color: #4a3b2c;
+            color: #5f4c2b;
         }
-
-        hr {
-            border-top: 3px solid #2c2b26;
-            margin: 1rem 0;
-        }
-
         @media (max-width: 680px) {
-            .quiz-container {
-                padding: 1rem;
-            }
-            .question-text {
-                font-size: 1.2rem;
-            }
-            button {
-                padding: 0.5rem 1rem;
-                font-size: 0.9rem;
-            }
+            .quiz-container { padding: 1rem; }
+            .question-text { font-size: 1.2rem; }
+            button { padding: 0.5rem 1rem; font-size: 0.9rem; }
         }
     </style>
 </head>
 <body>
 <div class="quiz-container" id="quizRoot">
-    <h1>PROMPT ENGINEERING<br>+ NEURAL NETWORKS</h1>
-    <div class="sub">// КВИЗ ПРО НЕЙРОСЕТИ / 15 ВОПРОСОВ</div>
-
-    <div class="progress-area">
-        <div class="progress-bar" id="progressFill"></div>
-        <div class="counter" id="questionCounter">ВОПРОС 0 / 15</div>
-    </div>
-
-    <div id="questionCard" class="question-card">
-        <!-- динамически -->
-    </div>
-
-    <div class="nav-buttons">
-        <button id="prevBtn" disabled>⟨ НАЗАД</button>
-        <button id="nextBtn">ДАЛЕЕ ⟩</button>
-    </div>
-
+    <h1>PROMPT-КВИЗ: НЕЙРОСЕТИ</h1>
+    <div class="sub">// МЕМЫ + ПРОМПТЫ // ИНТЕРАКТИВ</div>
+    <div class="progress-area"><div class="progress-bar" id="progressFill"></div><div class="counter" id="questionCounter"></div></div>
+    <div id="questionCard" class="question-card"></div>
+    <div class="nav-buttons"><button id="prevBtn" disabled>⟨ НАЗАД</button><button id="nextBtn">ДАЛЕЕ ⟩</button></div>
     <div id="resultContainer" style="display: none;"></div>
-    <footer>БРУТАЛИЗМ / RETRO COMPUTING // ОТВЕТЫ ФИКСИРУЮТСЯ АВТОМАТИЧЕСКИ</footer>
+    <footer>Колледж БГПУ им. М. Акмуллы</footer>
 </div>
 
 <script>
-    // ---------- ВОПРОСЫ (15 штук, сложнее среднего) ----------
+    // ---------- ВОПРОСЫ (легче + интерактив: написание промпта, перестановка слов, мемы) ----------
     const QUESTIONS = [
-        { text: "Что такое температурный параметр (temperature) в генеративных языковых моделях?", 
-          options: [
-              "Степень детерминированности ответа: чем выше, тем более случайными становятся токены", 
-              "Количество токенов, которые модель обрабатывает за раз", 
-              "Максимальная длина генерируемого ответа", 
-              "Параметр, отвечающий за скорость работы GPU"
-          ], 
-          correct: 0 },
-        { text: "Какой метод промптинга подразумевает предоставление модели нескольких примеров ответа до финального запроса?", 
-          options: [
-              "Zero-shot", 
-              "Few-shot", 
-              "Chain-of-Thought", 
-              "ReAct"
-          ], 
-          correct: 1 },
-        { text: "Какая техника используется, чтобы заставить модель объяснить промежуточные рассуждения перед выдачей финального ответа?", 
-          options: [
-              "Self-consistency", 
-              "Chain-of-Thought (CoT)", 
-              "Prompt chaining", 
-              "Instruction tuning"
-          ], 
-          correct: 1 },
-        { text: "В контексте LLM, что такое 'галлюцинация' (hallucination)?", 
-          options: [
-              "Модель генерирует правдоподобные, но фактологически неверные данные", 
-              "Отказ модели отвечать на запрос из-за политики безопасности", 
-              "Переполнение буфера токенов во время инференса", 
-              "Случайная смена языка ответа на середине предложения"
-          ], 
-          correct: 0 },
-        { text: "Какой из подходов позволяет LLM 'искать' информацию в интернете или базе знаний перед ответом?", 
-          options: [
-              "Fine-tuning", 
-              "Retrieval-Augmented Generation (RAG)", 
-              "Prompt hashing", 
-              "LoRA"
-          ], 
-          correct: 1 },
-        { text: "Что такое 'логиты' (logits) в контексте работы языковой модели?", 
-          options: [
-              "Нормализованные вероятности следующего токена", 
-              "Сырые, ненормализованные оценки (веса) для каждого возможного следующего токена", 
-              "Специальные токены, обозначающие начало и конец текста", 
-              "Метрика качества генерации BLEU"
-          ], 
-          correct: 1 },
-        { text: "Параметр top-p (nucleus sampling) ограничивает набор токенов...", 
-          options: [
-              "С фиксированным количеством самых вероятных токенов", 
-              "Суммарная вероятность которых не превышает p, выбирая из динамического набора", 
-              "Которые содержат определенный корневой суффикс", 
-              "Исключая стоп-слова и предлоги"
-          ], 
-          correct: 1 },
-        { text: "Что такое 'системный промпт' (system prompt) в API типа ChatGPT?", 
-          options: [
-              "Сообщение от пользователя, определяющее стиль и правила поведения модели на всю сессию", 
-              "Служебный запрос для отладки нейросети", 
-              "Промпт, который модель обязана игнорировать", 
-              "Команда для перезагрузки контекста окна"
-          ], 
-          correct: 0 },
-        { text: "Что из перечисленного лучше всего описывает 'one-shot' промптинг?", 
-          options: [
-              "Запрос без примеров", 
-              "Ровно один пример желаемого ответа в промпте", 
-              "Только один токен генерируется на выходе", 
-              "Модель обучается на одном изображении"
-          ], 
-          correct: 1 },
-        { text: "Какая проблема решается с помощью 'self-consistency' при использовании CoT?", 
-          options: [
-              "Уменьшение количества галлюцинаций за счет множественных траекторий рассуждений и голосования", 
-              "Ускорение генерации за счет кэширования ключей", 
-              "Сжатие промпта в эмбеддинги", 
-              "Автоматическая маркировка конфиденциальных данных"
-          ], 
-          correct: 0 },
-        { text: "Что такое 'embedding' в контексте нейросетей и RAG?", 
-          options: [
-              "Векторное представление данных (текста, изображения) в непрерывном пространстве", 
-              "Слой dropout для регуляризации", 
-              "Метод квантования весов модели", 
-              "Функция потерь для LLM"
-          ], 
-          correct: 0 },
-        { text: "Какой паттерн интеграции ИИ предполагает, что один LLM-агент генерирует код, а другой проверяет его на ошибки?", 
-          options: [
-              "Mixture of Experts (MoE)", 
-              "Multi-agent debate / dual-agent review", 
-              "Tree-of-Thoughts", 
-              "Instruction backpropagation"
-          ], 
-          correct: 1 },
-        { text: "Что означает термин 'prompt injection' с точки зрения безопасности?", 
-          options: [
-              "Внедрение вредоносных инструкций в пользовательский ввод, переопределяющих исходный системный промпт", 
-              "Метод оптимизации запросов для снижения задержек", 
-              "Кеширование промптов на сервере", 
-              "Легальный способ обрезки контекстного окна"
-          ], 
-          correct: 0 },
-        { text: "Какая метрика лучше всего подходит для оценки точности ответов LLM в закрытой задаче (например, викторина с фактами)?", 
-          options: [
-              "Perplexity", 
-              "BLEU", 
-              "ROUGE", 
-              "Exact match или F1-score по ключевым фактам"
-          ], 
-          correct: 3 },
-        { text: "Что такое 'агент' (agent) на базе LLM в интеграционных решениях?", 
-          options: [
-              "Автономная система, которая использует LLM для планирования, вызова инструментов и циклов обратной связи", 
-              "Урезанная версия модели для edge-устройств", 
-              "Простой чат-бот без памяти", 
-              "Архитектура трансформера без внимания"
-          ], 
-          correct: 0 }
+        {   // 0 - обычный с вариантами
+            type: "choice",
+            text: "Что такое 'промпт' (prompt) в общении с нейросетью?",
+            options: ["Запрос или инструкция, которую мы даём модели", "Скорость работы видеокарты", "Имя нейросети от OpenAI", "Ошибка в генерации текста"],
+            correct: 0
+        },
+        {   // 1 - перестановка слов (собрать правильный промпт)
+            type: "reorder",
+            text: "Собери правильный промпт для нейросети, чтобы она нарисовала КОТА В КОСМОСЕ. Кликай на слова в нужном порядке.",
+            wordsBank: ["нарисуй", "милого", "кота", "в космосе", "в стиле ретро"],
+            correctOrder: ["нарисуй", "милого", "кота", "в космосе", "в стиле ретро"],
+            hint: "Порядок: глагол → прилагательное → объект → место → стиль"
+        },
+        {   // 2 - мем про нейросети
+            type: "meme",
+            text: "Посмотри на мем про нейросети. Какой тип ошибки ИИ здесь высмеивается?",
+            memeAscii: `
+   __________________________
+  |   НЕЙРОСЕТЬ:             |
+  |   "Нарисуй человека с     |
+  |    тремя руками"          |
+  |                          |
+  |   РЕЗУЛЬТАТ: человек с   |
+  |    шестью пальцами и      |
+  |    грустным котом вместо  |
+  |    головы                 |
+  |__________________________|
+            `,
+            options: ["Галлюцинация (hallucination)", "Переобучение", "Затухание градиента", "Коллапс модели"],
+            correct: 0
+        },
+        {   // 3 - написание промпта (короткое поле)
+            type: "write_prompt",
+            text: "Ты хочешь, чтобы нейросеть написала стихотворение про робота, который влюбился в чайник. Напиши максимально конкретный промпт (1-2 предложения).",
+            checkCriteria: (answer) => {
+                let lower = answer.toLowerCase();
+                return (lower.includes("робот") || lower.includes("робота")) && (lower.includes("чайник") || lower.includes("чайника")) && lower.includes("стих");
+            },
+            correctExample: "Напиши короткое стихотворение о роботе, который влюбился в электрический чайник."
+        },
+        {   // 4 - обычный про temperature
+            type: "choice",
+            text: "Параметр 'температура' (temperature) в нейросетях отвечает за...",
+            options: ["Креативность и случайность ответов", "Громкость звука", "Скорость генерации картинок", "Количество пальцев на руках"],
+            correct: 0
+        },
+        {   // 5 - мем с галлюцинацией
+            type: "meme",
+            text: "Мем: 'Нейросеть попросили объяснить теорию струн, она написала рецепт пиццы'. Это пример чего?",
+            memeAscii: `[ ЗАПРОС: Объясни теорию струн ]  ->   [ ОТВЕТ: Смешай муку, томатный соус... ]`,
+            options: ["Галлюцинация", "Правильный Few-shot", "Токенизация", "Fine-tuning"],
+            correct: 0
+        },
+        {   // 6 - перестановка слов (промпт для озвучки)
+            type: "reorder",
+            text: "Составь промпт для генерации видео: 'робот танцует брейк-данс на Марсе' (расставь слова логично)",
+            wordsBank: ["сгенерируй", "видео", "робот", "танцует", "брейк-данс", "на Марсе"],
+            correctOrder: ["сгенерируй", "видео", "робот", "танцует", "брейк-данс", "на Марсе"]
+        },
+        {   // 7 - выбор про промпт-инжиниринг
+            type: "choice",
+            text: "Что значит 'few-shot' промптинг?",
+            options: ["Дать модели несколько примеров перед основным заданием", "Один точный запрос без примеров", "Запретить модели отвечать", "Сменить язык ответа"],
+            correct: 0
+        },
+        {   // 8 - написать промпт для мема
+            type: "write_prompt",
+            text: "Придумай промпт для нейросети, чтобы она сгенерировала мем про 'нейросеть и экзамен'. Используй слова: 'мем', 'студент', 'искусственный интеллект'.",
+            checkCriteria: (ans) => {
+                let low = ans.toLowerCase();
+                return low.includes("мем") && low.includes("студент") && low.includes("искусственный интеллект");
+            },
+            correctExample: "Создай мем про студента, который сдаёт экзамен с помощью искусственного интеллекта."
+        },
+        {   // 9 - мем про DALL-E
+            type: "meme",
+            text: "На картинке: пользователь просит 'кота в сапогах', а нейросеть рисует кота, который обул сапоги на уши. Это проблема:",
+            memeAscii: `ЗАПРОС: "Кот в сапогах" → РЕЗУЛЬТАТ: кот, у которого сапоги на ушах`,
+            options: ["Неправильное понимание контекста", "Слишком низкая температура", "Идеальный результат", "Сработал антиплагиат"],
+            correct: 0
+        },
+        {   // 10 - про то, как уточнять промпт
+            type: "choice",
+            text: "Если нейросеть дала странный ответ, лучшая стратегия:",
+            options: ["Переформулировать промпт, добавить детали/примеры", "Выключить компьютер", "Повторить тот же запрос 10 раз", "Сменить шрифт"],
+            correct: 0
+        },
+        {   // 11 - перестановка слов (сложнее)
+            type: "reorder",
+            text: "Собери промпт для нейросети, чтобы она объяснила, как работает 'внимание' (attention) 10-летнему ребенку.",
+            wordsBank: ["объясни", "как работает внимание", "простыми словами", "для ребенка 10 лет"],
+            correctOrder: ["объясни", "как работает внимание", "простыми словами", "для ребенка 10 лет"]
+        },
+        {   // 12 - мем про chatGPT
+            type: "meme",
+            text: "Мем: Учитель спрашивает, кто написал 'Войну и мир', ChatGPT отвечает 'Марк Цукерберг'. Это:",
+            memeAscii: `Q: Кто написал "Войну и мир"? A: Марк Цукерберг.`,
+            options: ["Галлюцинация / выдумка фактов", "Правильный факт", "Слишком высокая температура", "Сбой датасета"],
+            correct: 0
+        },
+        {   // 13 - написание промпта (творческий)
+            type: "write_prompt",
+            text: "Придумай промпт для ИИ, который поможет придумать сценарий для видео про школу будущего. Используй слово 'робот-учитель'.",
+            checkCriteria: (ans) => ans.toLowerCase().includes("робот-учитель") && ans.length > 10,
+            correctExample: "Придумай сценарий для короткого видео: школа будущего, где робот-учитель ведёт урок физики."
+        },
+        {   // 14 - легкий финал
+            type: "choice",
+            text: "Что такое 'нейросеть' простыми словами?",
+            options: ["Программа, которая учится на примерах и находит закономерности", "Сеть для ловли нейронов", "Новый вид социальной сети", "Бренд смартфона"],
+            correct: 0
+        }
     ];
 
-    // state
+    // Состояние
     let currentIndex = 0;
-    let userAnswers = new Array(QUESTIONS.length).fill(null);  // индекс выбранного варианта (0..3)
+    let userAnswers = new Array(QUESTIONS.length).fill(null); // для choice / reorder храним результат; для write_prompt строку
     let quizFinished = false;
+    let dynamicRender = null; 
 
-    // DOM элементы
     const questionCardDiv = document.getElementById('questionCard');
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
@@ -408,19 +447,33 @@
     const questionCounterSpan = document.getElementById('questionCounter');
     const resultContainer = document.getElementById('resultContainer');
 
-    // вспомогательные функции
     function updateProgressAndCounter() {
-        const answeredCount = userAnswers.filter(a => a !== null).length;
+        let answeredCount = 0;
+        for (let i=0; i<QUESTIONS.length; i++) {
+            if (userAnswers[i] !== null && userAnswers[i] !== undefined && userAnswers[i] !== '') answeredCount++;
+        }
         const percent = (answeredCount / QUESTIONS.length) * 100;
         progressFill.style.width = percent + '%';
         if (currentIndex < QUESTIONS.length) {
-            questionCounterSpan.innerText = `ВОПРОС ${currentIndex+1} / ${QUESTIONS.length}  |  ОТВЕЧЕНО: ${answeredCount}`;
+            questionCounterSpan.innerText = `ВОПРОС ${currentIndex+1}/${QUESTIONS.length} | ОТВЕЧЕНО: ${answeredCount}`;
         } else {
-            questionCounterSpan.innerText = `ЗАВЕРШЕН / ОТВЕЧЕНО: ${answeredCount}`;
+            questionCounterSpan.innerText = `ФИНИШ | ОТВЕЧЕНО: ${answeredCount}`;
         }
     }
 
-    // рендер текущего вопроса
+    function saveReorderAnswer(questionIdx, orderArray) {
+        userAnswers[questionIdx] = { type: 'reorder', value: orderArray };
+        updateProgressAndCounter();
+    }
+    function saveWriteAnswer(questionIdx, text) {
+        userAnswers[questionIdx] = { type: 'write', value: text };
+        updateProgressAndCounter();
+    }
+    function saveChoiceAnswer(questionIdx, choiceIdx) {
+        userAnswers[questionIdx] = { type: 'choice', value: choiceIdx };
+        updateProgressAndCounter();
+    }
+
     function renderCurrentQuestion() {
         if (quizFinished) return;
         if (currentIndex >= QUESTIONS.length) {
@@ -428,242 +481,190 @@
             return;
         }
         const q = QUESTIONS[currentIndex];
-        const selectedIdx = userAnswers[currentIndex];
-        let optionsHtml = '';
-        const prefixes = ['A', 'B', 'C', 'D'];
-        q.options.forEach((opt, idx) => {
-            const isSelected = (selectedIdx === idx);
-            const selectedClass = isSelected ? 'selected' : '';
-            optionsHtml += `
-                <div class="option ${selectedClass}" data-opt-index="${idx}">
-                    <span class="option-prefix">${prefixes[idx]}</span>
-                    <span>${escapeHtml(opt)}</span>
-                </div>
-            `;
-        });
+        if (q.type === 'choice') renderChoiceQuestion(q, currentIndex);
+        else if (q.type === 'reorder') renderReorderQuestion(q, currentIndex);
+        else if (q.type === 'meme') renderMemeQuestion(q, currentIndex);
+        else if (q.type === 'write_prompt') renderWritePromptQuestion(q, currentIndex);
+        updateProgressAndCounter();
+        prevBtn.disabled = (currentIndex === 0);
+    }
 
-        const html = `
-            <div class="question-text">${escapeHtml(q.text)}</div>
-            <div class="options-list" id="optionsList">
-                ${optionsHtml}
-            </div>
-        `;
-        questionCardDiv.innerHTML = html;
-        // вешаем обработчики на option
-        const optDivs = document.querySelectorAll('.option');
-        optDivs.forEach(optDiv => {
-            optDiv.addEventListener('click', (e) => {
-                if (quizFinished) return;
-                const idx = parseInt(optDiv.dataset.optIndex);
-                // сохраняем ответ
-                userAnswers[currentIndex] = idx;
-                // перерисовываем текущий вопрос, чтобы подсветить выбранный
-                renderCurrentQuestion();
-                updateProgressAndCounter();
-                // после ответа автоматически разблокируется next (кнопка)
+    function renderChoiceQuestion(q, idx) {
+        let saved = userAnswers[idx]?.value;
+        let optsHtml = '';
+        let prefixes = ['A','B','C','D'];
+        q.options.forEach((opt, i) => {
+            let isSelected = (saved === i);
+            optsHtml += `<div class="option ${isSelected ? 'selected' : ''}" data-opt-index="${i}"><span class="option-prefix">${prefixes[i]}</span><span>${escapeHtml(opt)}</span></div>`;
+        });
+        questionCardDiv.innerHTML = `<div class="question-text">${escapeHtml(q.text)}</div><div class="options-list" id="optionsList">${optsHtml}</div>`;
+        document.querySelectorAll('.option').forEach(el => {
+            el.addEventListener('click', (e) => {
+                let optIdx = parseInt(el.dataset.optIndex);
+                saveChoiceAnswer(idx, optIdx);
+                renderCurrentQuestion(); 
             });
         });
-        updateProgressAndCounter();
-        // управление кнопками
-        prevBtn.disabled = (currentIndex === 0);
-        // nextBtn не дизейблим, но можно проверить наличие ответа?
-        // сделаем некст активным всегда, но можно предупредить если нет ответа (мягкое)
-        // стиль: можно переходить без ответа, но в конце подсветим пропуски
     }
 
-    // простая защита от XSS
-    function escapeHtml(str) {
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
-            return c;
+    function renderReorderQuestion(q, idx) {
+        let saved = userAnswers[idx]?.value || [];
+        let bankHtml = q.wordsBank.map(word => `<div class="word-token" data-word="${word}">${escapeHtml(word)}</div>`).join('');
+        let builtHtml = saved.map((word, i) => `<div class="placed-word" data-pos="${i}">${escapeHtml(word)}<span class="remove-word" data-word="${word}">✖</span></div>`).join('');
+        questionCardDiv.innerHTML = `
+            <div class="question-text">${escapeHtml(q.text)}</div>
+            <div class="drag-word-area"><div class="word-bank" id="wordBank">${bankHtml}</div>
+            <div><strong>Твой промпт (порядок):</strong></div><div class="sentence-builder" id="sentenceBuilder">${builtHtml || 'Нажми на слова, чтобы собрать'}</div>
+            <button id="resetReorderBtn" style="margin-top:10px; background:#4a3724;">СБРОСИТЬ ПОРЯДОК</button></div>
+        `;
+        const bankDiv = document.getElementById('wordBank');
+        const builderDiv = document.getElementById('sentenceBuilder');
+        const addWord = (word) => {
+            let newOrder = [...saved, word];
+            saveReorderAnswer(idx, newOrder);
+            renderCurrentQuestion();
+        };
+        const removeWordAt = (wordToRemove) => {
+            let newOrder = saved.filter(w => w !== wordToRemove);
+            saveReorderAnswer(idx, newOrder);
+            renderCurrentQuestion();
+        };
+        if (bankDiv) {
+            Array.from(bankDiv.querySelectorAll('.word-token')).forEach(token => {
+                token.addEventListener('click', () => { addWord(token.dataset.word); });
+            });
+        }
+        if (builderDiv) {
+            Array.from(builderDiv.querySelectorAll('.remove-word')).forEach(btn => {
+                btn.addEventListener('click', (e) => { e.stopPropagation(); removeWordAt(btn.dataset.word); });
+            });
+        }
+        const resetBtn = document.getElementById('resetReorderBtn');
+        if (resetBtn) resetBtn.addEventListener('click', () => { saveReorderAnswer(idx, []); renderCurrentQuestion(); });
+    }
+
+    function renderMemeQuestion(q, idx) {
+        let saved = userAnswers[idx]?.value;
+        let optsHtml = '';
+        let prefixes = ['A','B','C','D'];
+        q.options.forEach((opt, i) => {
+            let isSelected = (saved === i);
+            optsHtml += `<div class="option ${isSelected ? 'selected' : ''}" data-opt-index="${i}"><span class="option-prefix">${prefixes[i]}</span><span>${escapeHtml(opt)}</span></div>`;
+        });
+        questionCardDiv.innerHTML = `<div class="question-text">${escapeHtml(q.text)}</div><div class="meme-area"><pre class="ascii-meme">${escapeHtml(q.memeAscii)}</pre></div><div class="options-list" id="optionsList">${optsHtml}</div>`;
+        document.querySelectorAll('.option').forEach(el => {
+            el.addEventListener('click', () => {
+                let optIdx = parseInt(el.dataset.optIndex);
+                saveChoiceAnswer(idx, optIdx);
+                renderCurrentQuestion();
+            });
         });
     }
 
-    // навигация
-    function goPrev() {
-        if (quizFinished) return;
-        if (currentIndex > 0) {
-            currentIndex--;
+    function renderWritePromptQuestion(q, idx) {
+        let savedValue = userAnswers[idx]?.value || '';
+        questionCardDiv.innerHTML = `
+            <div class="question-text">${escapeHtml(q.text)}</div>
+            <div class="prompt-builder"><textarea id="promptUserInput" class="prompt-input" rows="3" placeholder="Напиши свой промпт...">${escapeHtml(savedValue)}</textarea>
+            <button id="savePromptBtn" class="check-prompt-btn">СОХРАНИТЬ ПРОМПТ</button>
+            <div style="margin-top:8px; font-size:0.8rem;">💡 Пример: ${escapeHtml(q.correctExample)}</div></div>
+        `;
+        const textarea = document.getElementById('promptUserInput');
+        const saveBtn = document.getElementById('savePromptBtn');
+        saveBtn.addEventListener('click', () => {
+            let val = textarea.value.trim();
+            saveWriteAnswer(idx, val);
             renderCurrentQuestion();
-            // небольшая анимация: добавим класс fade, потом уберем
-            animateCard();
-        }
+        });
     }
 
+    function goPrev() { if (!quizFinished && currentIndex > 0) { currentIndex--; renderCurrentQuestion(); animateCard(); } }
     function goNext() {
         if (quizFinished) return;
-        if (currentIndex < QUESTIONS.length - 1) {
-            currentIndex++;
-            renderCurrentQuestion();
-            animateCard();
-        } else if (currentIndex === QUESTIONS.length - 1) {
-            // последний вопрос, завершаем квиз
-            currentIndex++; // чтобы уйти за пределы
-            finishQuizAndShowResults();
-        }
+        if (currentIndex < QUESTIONS.length - 1) { currentIndex++; renderCurrentQuestion(); animateCard(); }
+        else if (currentIndex === QUESTIONS.length - 1) { currentIndex++; finishQuizAndShowResults(); }
     }
+    function animateCard() { questionCardDiv.style.opacity = '0.7'; questionCardDiv.style.transform = 'translateX(5px)'; setTimeout(() => { if(questionCardDiv) { questionCardDiv.style.opacity = '1'; questionCardDiv.style.transform = 'translateX(0)'; } }, 100); }
 
-    function animateCard() {
-        if (!questionCardDiv) return;
-        questionCardDiv.style.transition = 'opacity 0.1s, transform 0.15s';
-        questionCardDiv.style.opacity = '0.6';
-        questionCardDiv.style.transform = 'translateX(6px)';
-        setTimeout(() => {
-            if (questionCardDiv) {
-                questionCardDiv.style.opacity = '1';
-                questionCardDiv.style.transform = 'translateX(0)';
-            }
-        }, 80);
-        setTimeout(() => {
-            if (questionCardDiv) questionCardDiv.style.transition = '';
-        }, 200);
-    }
-
-    // подсчёт результатов + генерация PDF (через window.open dataUrl)
     function finishQuizAndShowResults() {
         if (quizFinished) return;
         quizFinished = true;
-        // скрываем карточку вопроса и кнопки навигации
         questionCardDiv.style.display = 'none';
         prevBtn.style.display = 'none';
         nextBtn.style.display = 'none';
-        // вычисляем баллы
-        let correctCount = 0;
-        let detailedResults = [];
-        for (let i = 0; i < QUESTIONS.length; i++) {
-            const userChoice = userAnswers[i];
-            const isCorrect = (userChoice !== null && userChoice === QUESTIONS[i].correct);
-            if (isCorrect) correctCount++;
-            let userAnswerText = (userChoice !== null) ? QUESTIONS[i].options[userChoice] : 'НЕ ВЫБРАНО';
-            let correctAnswerText = QUESTIONS[i].options[QUESTIONS[i].correct];
-            detailedResults.push({
-                question: QUESTIONS[i].text,
-                userAnswer: userAnswerText,
-                correctAnswer: correctAnswerText,
-                isCorrect: isCorrect,
-                userIdx: userChoice
-            });
+        let score = 0;
+        let details = [];
+        for (let i=0; i<QUESTIONS.length; i++) {
+            const q = QUESTIONS[i];
+            const answer = userAnswers[i];
+            let isCorrect = false;
+            let userDisplay = '';
+            if (q.type === 'choice') {
+                let chosenIdx = answer?.value;
+                isCorrect = (chosenIdx !== undefined && chosenIdx === q.correct);
+                userDisplay = (chosenIdx !== undefined) ? q.options[chosenIdx] : 'Нет ответа';
+                if(isCorrect) score++;
+            } else if (q.type === 'reorder') {
+                let orderArr = answer?.value || [];
+                let correctArr = q.correctOrder;
+                isCorrect = (orderArr.length === correctArr.length && orderArr.every((v,idx)=> v === correctArr[idx]));
+                userDisplay = orderArr.join(' → ') || 'Не собран';
+                if(isCorrect) score++;
+            } else if (q.type === 'meme') {
+                let chosenIdx = answer?.value;
+                isCorrect = (chosenIdx !== undefined && chosenIdx === q.correct);
+                userDisplay = (chosenIdx !== undefined) ? q.options[chosenIdx] : 'Нет ответа';
+                if(isCorrect) score++;
+            } else if (q.type === 'write_prompt') {
+                let txt = answer?.value || '';
+                isCorrect = q.checkCriteria(txt);
+                userDisplay = txt || 'Пусто';
+                if(isCorrect) score++;
+            }
+            details.push({ text: q.text, user: userDisplay, correct: isCorrect, type: q.type });
         }
-        const scorePercent = Math.round((correctCount / QUESTIONS.length) * 100);
-        // отображение результата в DOM
-        let resultHtml = `
-            <div class="result-area">
-                <div class="score-block">
-                    РЕЗУЛЬТАТ: ${correctCount} / ${QUESTIONS.length}  (${scorePercent}%)
-                </div>
-                <p style="margin-bottom: 1rem; font-weight: bold;">// РАЗБОР ОТВЕТОВ</p>
-                <div style="max-height: 300px; overflow-y: auto; border: 2px solid #2c2b26; padding: 0.8rem; background: #f3efdf;">
-        `;
-        for (let i = 0; i < detailedResults.length; i++) {
-            const r = detailedResults[i];
-            const statusSym = r.isCorrect ? '[+]' : '[-]';
-            const colorStyle = r.isCorrect ? 'color: #2b5e2b;' : 'color: #b13e3e;';
-            resultHtml += `
-                <div style="margin-bottom: 1rem; border-bottom: 1px dashed #bba88a; padding-bottom: 0.6rem;">
-                    <strong>${i+1}. ${escapeHtml(r.question)}</strong><br>
-                    <span style="${colorStyle}">${statusSym} ВАШ ОТВЕТ: ${escapeHtml(r.userAnswer)}</span><br>
-                    <span style="color:#2c2b26;">✓ ВЕРНЫЙ ОТВЕТ: ${escapeHtml(r.correctAnswer)}</span>
-                </div>
-            `;
-        }
-        resultHtml += `</div><br><div id="pdfDownloadZone"></div></div>`;
+        const percent = Math.round((score/QUESTIONS.length)*100);
+        let resultHtml = `<div class="result-area"><div class="score-block">ПРОМПТ-МАСТЕР: ${score}/${QUESTIONS.length} (${percent}%)</div><div style="max-height:300px; overflow:auto; background:#f3efdf; padding:1rem; border:2px solid #1e1b15;">`;
+        details.forEach((d,i) => { resultHtml += `<div style="margin-bottom:0.8rem;"><strong>${i+1}. ${escapeHtml(d.text)}</strong><br>✔️ ${d.correct ? 'ВЕРНО' : 'НЕВЕРНО'} — ${escapeHtml(d.user.substring(0,80))}</div>`; });
+        resultHtml += `</div><div id="pdfDownloadZone"></div></div>`;
         resultContainer.innerHTML = resultHtml;
         resultContainer.style.display = 'block';
-
-        // создаём ссылку для скачивания PDF через генерацию текстового файла с расширением .pdf (но пользователь получит ссылку на файл PDF, который сформируем через браузерный print? Нет, мы сделаем настоящий PDF с помощью window.print? но задание: получить ссылку на скачивание pdf. 
-        // Самый надёжный способ без библиотек: сгенерировать HTML-содержимое для PDF и использовать data:application/octet-stream? Но это не pdf. 
-        // Создадим полноценный PDF через jsPDF? Лучше использовать простую генерацию через Blob и предложить скачать .pdf, но это будет просто текст с html разметкой. Чтобы было честно и профессионально — используем библиотеку? Не требуется внешних зависимостей, но условие: ссылка на скачивание файла PDF. Я реализую создание PDF через динамический iframe с печатью "сохранить как PDF"? Это не совсем ссылка.
-        // Лучший вариант: использовать jsPDF + html2canvas? Добавлять внешние библиотеки рискованно. Поэтому сделаем генерацию отчёта в виде .html, который пользователь сохранит как .pdf через браузер? Не подходит.
-        // Альтернатива: сформируем текстовый отчет с меткой .pdf? но это обман.
-        // Реализуем корректный способ: создаём Blob с application/pdf заглушкой, но реально это будет .html. Некрасиво.
-        // Более чистый подход: использовать браузерный print стилей для PDF, и предоставить инструкцию "сохранить как PDF"? Не ссылка.
-        // По условию: участник должен получить ссылку на скачивание файла pdf. Я сделаю генерацию файла .pdf через динамическое создание PDF из HTML с помощью загрузки библиотеки? Но библиотека может не загрузиться офлайн.
-        // Гарантированное решение: создадим серверную имитацию? В рамках локального HTML — можно сгенерировать data:application/pdf текст, но браузер не распознает его как валидный PDF.
-        // Поэтому самое безопасное — встроим библиотеку CDN jsPDF. Я добавлю её, она лёгкая, и сделаю честный PDF с результатами. Это надёжно и соответствует требованиям.
-        // Добавим скрипт jsPDF и сформируем кнопку скачивания.
-        if (typeof window.jspdf !== 'undefined' && window.jspdf.jsPDF) {
-            generatePdfWithJsPDF(detailedResults, correctCount, QUESTIONS.length, scorePercent);
-        } else {
-            // подгрузим библиотеку динамически
-            const script = document.createElement('script');
-            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-            script.onload = () => {
-                generatePdfWithJsPDF(detailedResults, correctCount, QUESTIONS.length, scorePercent);
-            };
-            document.head.appendChild(script);
-        }
+        generatePdfReport(score, QUESTIONS.length, percent, details);
     }
 
-    function generatePdfWithJsPDF(details, correct, total, percent) {
-        // дожидаемся, когда jspdf глобально доступен
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-        let y = 20;
-        doc.setFont("courier", "normal");
-        doc.setFontSize(16);
-        doc.text("КВИЗ: ПРОМПТИНГ И НЕЙРОСЕТИ", 20, y);
-        y += 10;
-        doc.setFontSize(12);
-        doc.text(`Результат: ${correct} из ${total} (${percent}%)`, 20, y);
-        y += 8;
-        doc.setFontSize(10);
-        for (let i = 0; i < details.length; i++) {
-            const q = details[i];
-            const prefix = q.isCorrect ? "+ " : "- ";
-            const questionShort = q.question.length > 70 ? q.question.substring(0, 67) + "..." : q.question;
-            doc.text(`${prefix}${i+1}. ${questionShort}`, 20, y);
-            y += 6;
-            doc.text(`   Ваш ответ: ${q.userAnswer.substring(0, 60)}`, 22, y);
-            y += 5;
-            doc.text(`   Верный: ${q.correctAnswer.substring(0, 60)}`, 22, y);
-            y += 7;
-            if (y > 270) {
-                doc.addPage();
-                y = 20;
+    function generatePdfReport(correct, total, percent, details) {
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+        script.onload = () => {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+            doc.setFont("courier");
+            doc.setFontSize(16); doc.text("КВИЗ: НЕЙРОСЕТИ + ПРОМПТЫ", 20, 20);
+            doc.setFontSize(12); doc.text(`Результат: ${correct} / ${total} (${percent}%)`, 20, 35);
+            let y = 50;
+            for(let i=0; i<details.length; i++) {
+                let status = details[i].correct ? "+" : "-";
+                let shortQ = details[i].text.length > 60 ? details[i].text.slice(0,57)+"..." : details[i].text;
+                doc.text(`${status} ${i+1}. ${shortQ}`, 20, y);
+                y+=6;
+                let userTxt = (details[i].user.length > 70) ? details[i].user.slice(0,67)+"..." : details[i].user;
+                doc.text(`   Ответ: ${userTxt}`, 22, y);
+                y+=8;
+                if(y>270){ doc.addPage(); y=20; }
             }
-        }
-        doc.text("--- ОТЧЕТ СГЕНЕРИРОВАН АВТОМАТИЧЕСКИ ---", 20, y+8);
-        // создаём ссылку для скачивания
-        const pdfBlob = doc.output('blob');
-        const url = URL.createObjectURL(pdfBlob);
-        const downloadLink = document.createElement('a');
-        downloadLink.href = url;
-        downloadLink.download = 'quiz_prompt_engineering_results.pdf';
-        downloadLink.className = 'download-link';
-        downloadLink.innerText = 'СКАЧАТЬ РЕЗУЛЬТАТ (PDF)';
-        const container = document.getElementById('pdfDownloadZone');
-        if (container) {
-            container.innerHTML = '';
-            container.appendChild(downloadLink);
-        }
-        URL.revokeObjectURL(url); // не сразу, но ссылка жива
+            const blob = doc.output('blob');
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'quiz_prompts_results.pdf'; a.className = 'download-link'; a.innerText = 'СКАЧАТЬ РЕЗУЛЬТАТ (PDF)';
+            document.getElementById('pdfDownloadZone').appendChild(a);
+            URL.revokeObjectURL(url);
+        };
+        document.head.appendChild(script);
     }
-
-    // на случай, если библиотека уже загружена, но мы вызываем после рендера
-    window.generatePdfWithJsPDF = generatePdfWithJsPDF;
-
-    // обработчики кнопок
+    function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
     prevBtn.addEventListener('click', goPrev);
     nextBtn.addEventListener('click', goNext);
-
-    // инициализация
-    function init() {
-        currentIndex = 0;
-        userAnswers.fill(null);
-        quizFinished = false;
-        questionCardDiv.style.display = 'block';
-        prevBtn.style.display = 'flex';
-        nextBtn.style.display = 'flex';
-        resultContainer.style.display = 'none';
-        resultContainer.innerHTML = '';
-        renderCurrentQuestion();
-        updateProgressAndCounter();
-    }
-    init();
+    renderCurrentQuestion();
 </script>
 </body>
 </html>
