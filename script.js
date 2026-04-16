@@ -418,16 +418,16 @@ function finishQuizAndShowResults() {
     resultContainer.innerHTML = resultHtml;
     resultContainer.style.display = 'block';
     
-    // Кнопка для скачивания PDF
-    const downloadBtn = document.createElement('button');
-    downloadBtn.innerText = 'Скачать чек-лист по промтингу';
-    downloadBtn.className = 'download-link';
-    downloadBtn.style.width = '100%';
-    downloadBtn.style.marginTop = '1rem';
-    downloadBtn.onclick = () => {
-        generateAndDownloadPDF(score, QUESTIONS.length, percent, details);
-    };
-    document.getElementById('pdfDownloadZone').appendChild(downloadBtn);
+    // === ПРЯМАЯ ССЫЛКА НА GOOGLE DRIVE ===
+    const downloadLink = document.createElement('a');
+    downloadLink.href = 'https://drive.google.com/uc?export=download&id=17kjgxvVVRkXygskbM0nWl0iIkfpF5OJg';
+    downloadLink.download = 'Check-list.pdf';
+    downloadLink.innerText = 'Скачать чек-лист по промтингу.PDF';
+    downloadLink.className = 'download-link';
+    downloadLink.style.width = '100%';
+    downloadLink.style.marginTop = '1rem';
+    downloadLink.target = '_blank';
+    document.getElementById('pdfDownloadZone').appendChild(downloadLink);
 }
 
 function escapeHtml(str) {
