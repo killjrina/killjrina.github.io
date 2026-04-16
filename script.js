@@ -385,7 +385,7 @@ function generatePdfReport(correct, total, percent, details) {
         a.href = url;
         a.download = 'Check-list.pdf';
         a.className = 'download-link';
-        a.innerText = 'СКАЧАТЬ CHECK-LIST.PDF';
+        a.innerText = 'Скачать чек-лист по промтингу';
         document.getElementById('pdfDownloadZone').appendChild(a);
         URL.revokeObjectURL(url);
     };
