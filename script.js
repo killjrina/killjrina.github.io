@@ -1,4 +1,4 @@
-// ---------- ВОПРОСЫ (15 штук, адаптированные) ----------
+// ---------- 8 ПРОСТЫХ И ИНТЕРЕСНЫХ ВОПРОСОВ С МГНОВЕННОЙ ОБРАТНОЙ СВЯЗЬЮ ----------
 const QUESTIONS = [
     {   // 0 - обычный с вариантами
         type: "choice",
@@ -12,10 +12,10 @@ const QUESTIONS = [
         text: "Собери правильный промпт для нейросети, чтобы она нарисовала КОТА В КОСМОСЕ. Кликай на слова в нужном порядке.",
         wordsBank: ["нарисуй", "милого", "кота", "в космосе", "в стиле ретро"],
         correctOrder: ["нарисуй", "милого", "кота", "в космосе", "в стиле ретро"],
-        hint: "Порядок: глагол → прилагательное → объект → место → стиль",
+        hint: "Порядок: действие → описание → объект → место → стиль",
         explanation: "Правильный порядок: нарисуй (действие) → милого (описание) → кота (объект) → в космосе (место) → в стиле ретро (стиль)"
     },
-    {   // 2 - промт + неправильный результат (ошибка)
+    {   // 2 - ошибка с галлюцинацией
         type: "error_case",
         text: "Был задан промт: 'Нарисуй человека с тремя руками'. Нейросеть нарисовала человека с шестью пальцами и головой кота. В чём проблема?",
         options: ["Галлюцинация — модель добавила лишние детали", "Не хватило контекста", "Слишком низкая температура", "Проблема с токенизацией"],
@@ -32,80 +32,28 @@ const QUESTIONS = [
         correctExample: "Напиши короткое стихотворение о роботе, который влюбился в электрический чайник.",
         explanation: "Хороший промпт должен содержать: тему (робот, чайник), жанр (стихотворение) и конкретные детали."
     },
-    {   // 4 - обычный про temperature
+    {   // 4 - про температуру
         type: "choice",
         text: "Параметр 'температура' (temperature) в нейросетях отвечает за...",
         options: ["Креативность и случайность ответов", "Громкость звука", "Скорость генерации картинок", "Количество пальцев на руках"],
         correct: 0,
         explanation: "Температура регулирует случайность: чем выше, тем более неожиданные и креативные ответы."
     },
-    {   // 5 - ошибка с фактами
-        type: "error_case",
-        text: "Промт: 'Объясни теорию струн'. Ответ нейросети: 'Смешай муку, томатный соус и сыр, запекай 20 минут'. Что случилось?",
-        options: ["Галлюцинация — модель выдала рецепт вместо физики", "Переобучение на кулинарных данных", "Слишком высокая температура", "Не хватило токенов"],
-        correct: 0,
-        explanation: "Модель 'галлюцинировала' — сгенерировала правдоподобный, но неверный ответ, не связанный с запросом."
-    },
-    {   // 6 - перестановка слов с перемешиванием
-        type: "reorder",
-        text: "Составь промпт для генерации видео: 'робот танцует брейк-данс на Марсе'",
-        wordsBank: ["сгенерируй", "видео", "робот", "танцует", "брейк-данс", "на Марсе"],
-        correctOrder: ["сгенерируй", "видео", "робот", "танцует", "брейк-данс", "на Марсе"],
-        explanation: "Логичный порядок: действие → тип контента → субъект → действие субъекта → стиль → место"
-    },
-    {   // 7 - выбор про промпт-инжиниринг
+    {   // 5 - few-shot
         type: "choice",
         text: "Что значит 'few-shot' промптинг?",
         options: ["Дать модели несколько примеров перед основным заданием", "Один точный запрос без примеров", "Запретить модели отвечать", "Сменить язык ответа"],
         correct: 0,
         explanation: "Few-shot — это когда ты показываешь модели 2-3 примера того, как должен выглядеть ответ, а потом даёшь основное задание."
     },
-    {   // 8 - написание промпта
-        type: "write_prompt",
-        text: "Придумай промпт для нейросети, чтобы она сгенерировала историю про 'робота-учителя и двоечника'. Используй ключевые слова: 'история', 'робот-учитель', 'двоечник'.",
-        checkCriteria: (ans) => {
-            let low = ans.toLowerCase();
-            return low.includes("история") && low.includes("робот-учитель") && low.includes("двоечник");
-        },
-        correctExample: "Напиши короткую историю про робота-учителя, который пытается помочь двоечнику сдать экзамен.",
-        explanation: "Чем конкретнее промпт, тем лучше результат: указывай жанр, персонажей и контекст."
-    },
-    {   // 9 - ошибка с контекстом
-        type: "error_case",
-        text: "Промт: 'Кот в сапогах'. Нейросеть нарисовала кота, у которого сапоги надеты на уши. В чём проблема?",
-        options: ["Модель неправильно поняла предлог 'в'", "Слишком низкая температура", "Не хватило примера (few-shot)", "Переобучение на мемах"],
-        correct: 0,
-        explanation: "Модель буквально поняла 'в сапогах' как 'внутри обуви', а не как 'одетый в сапоги'. Нужен более точный промпт."
-    },
-    {   // 10 - про уточнение промпта
-        type: "choice",
-        text: "Если нейросеть дала странный ответ, лучшая стратегия:",
-        options: ["Переформулировать промпт, добавить детали/примеры", "Выключить компьютер", "Повторить тот же запрос 10 раз", "Сменить шрифт"],
-        correct: 0,
-        explanation: "Всегда уточняй промпт: добавляй примеры, детали, уточняй формат ответа."
-    },
-    {   // 11 - перестановка слов
+    {   // 6 - перестановка слов
         type: "reorder",
         text: "Собери промпт для объяснения сложной темы ребёнку.",
         wordsBank: ["объясни", "как работает", "искусственный интеллект", "простыми словами", "для ребенка 10 лет"],
         correctOrder: ["объясни", "как работает", "искусственный интеллект", "простыми словами", "для ребенка 10 лет"],
         explanation: "Важно указать аудиторию: 'для ребёнка' и уровень сложности 'простыми словами'."
     },
-    {   // 12 - ошибка с фактами
-        type: "error_case",
-        text: "Промт: 'Кто написал \"Войну и мир\"?' Ответ: 'Марк Цукерберг'. Что это за ошибка?",
-        options: ["Галлюцинация — выдумка фактов", "Правильный ответ", "Сбой базы данных", "Слишком высокая температура"],
-        correct: 0,
-        explanation: "Модель может выдумывать факты, если не уверена в ответе. Всегда проверяйте информацию!"
-    },
-    {   // 13 - написание промпта
-        type: "write_prompt",
-        text: "Придумай промпт для ИИ, который поможет придумать сценарий для видео про школу будущего. Используй слово 'робот-учитель'.",
-        checkCriteria: (ans) => ans.toLowerCase().includes("робот-учитель") && ans.length > 10,
-        correctExample: "Придумай сценарий для короткого видео: школа будущего, где робот-учитель ведёт урок физики.",
-        explanation: "Указывай жанр (сценарий), контекст (школа будущего) и ключевых персонажей."
-    },
-    {   // 14 - лёгкий финал
+    {   // 7 - итоговый лёгкий
         type: "choice",
         text: "Что такое 'нейросеть' простыми словами?",
         options: ["Программа, которая учится на примерах и находит закономерности", "Сеть для ловли нейронов", "Новый вид социальной сети", "Бренд смартфона"],
@@ -118,6 +66,7 @@ const QUESTIONS = [
 let currentIndex = 0;
 let userAnswers = new Array(QUESTIONS.length).fill(null);
 let quizFinished = false;
+let waitingForNext = false; // блокировка кнопки "Далее" после ответа до ручного перехода
 
 const questionCardDiv = document.getElementById('questionCard');
 const prevBtn = document.getElementById('prevBtn');
@@ -148,24 +97,94 @@ function updateProgressAndCounter() {
     }
 }
 
+// Сохранение ответов с мгновенной обратной связью
 function saveReorderAnswer(questionIdx, orderArray) {
     userAnswers[questionIdx] = { type: 'reorder', value: orderArray };
     updateProgressAndCounter();
+    showInstantFeedback(questionIdx);
+    waitingForNext = true;
+    nextBtn.disabled = false; // разрешаем переход дальше
 }
 
 function saveWriteAnswer(questionIdx, text) {
     userAnswers[questionIdx] = { type: 'write', value: text };
     updateProgressAndCounter();
+    showInstantFeedback(questionIdx);
+    waitingForNext = true;
+    nextBtn.disabled = false;
 }
 
 function saveChoiceAnswer(questionIdx, choiceIdx) {
     userAnswers[questionIdx] = { type: 'choice', value: choiceIdx };
     updateProgressAndCounter();
+    showInstantFeedback(questionIdx);
+    waitingForNext = true;
+    nextBtn.disabled = false;
 }
 
 function saveErrorAnswer(questionIdx, choiceIdx) {
     userAnswers[questionIdx] = { type: 'error', value: choiceIdx };
     updateProgressAndCounter();
+    showInstantFeedback(questionIdx);
+    waitingForNext = true;
+    nextBtn.disabled = false;
+}
+
+// Мгновенная обратная связь: показывает правильно или нет + пояснение
+function showInstantFeedback(questionIdx) {
+    const q = QUESTIONS[questionIdx];
+    const answer = userAnswers[questionIdx];
+    if (!answer) return;
+    
+    let isCorrect = false;
+    let correctText = '';
+    let userDisplay = '';
+    let explanation = q.explanation || '';
+    
+    if (q.type === 'choice' || q.type === 'error_case') {
+        let chosenIdx = answer.value;
+        isCorrect = (chosenIdx !== undefined && chosenIdx === q.correct);
+        userDisplay = q.options[chosenIdx];
+        correctText = q.options[q.correct];
+    } else if (q.type === 'reorder') {
+        let orderArr = answer.value || [];
+        let correctArr = q.correctOrder;
+        isCorrect = (orderArr.length === correctArr.length && orderArr.every((v, idx) => v === correctArr[idx]));
+        userDisplay = orderArr.join(' → ') || 'Не собран';
+        correctText = correctArr.join(' → ');
+    } else if (q.type === 'write_prompt') {
+        let txt = answer.value || '';
+        isCorrect = q.checkCriteria(txt);
+        userDisplay = txt || 'Пусто';
+        correctText = q.correctExample;
+    }
+    
+    // Создаём или обновляем блок обратной связи
+    let feedbackDiv = document.getElementById('instantFeedback');
+    if (!feedbackDiv) {
+        feedbackDiv = document.createElement('div');
+        feedbackDiv.id = 'instantFeedback';
+        feedbackDiv.style.marginTop = '1rem';
+        feedbackDiv.style.padding = '0.8rem';
+        feedbackDiv.style.borderLeft = '6px solid';
+        feedbackDiv.style.fontWeight = 'bold';
+        questionCardDiv.appendChild(feedbackDiv);
+    }
+    
+    if (isCorrect) {
+        feedbackDiv.style.background = '#e6f4e6';
+        feedbackDiv.style.borderLeftColor = '#2b5e2b';
+        feedbackDiv.style.color = '#1e3a1e';
+        feedbackDiv.innerHTML = `<strong>ВЕРНО!</strong><br>📝 Пояснение: ${escapeHtml(explanation)}`;
+    } else {
+        feedbackDiv.style.background = '#ffe6e6';
+        feedbackDiv.style.borderLeftColor = '#b13e3e';
+        feedbackDiv.style.color = '#5e1e1e';
+        feedbackDiv.innerHTML = `<strong>НЕВЕРНО!</strong><br>📝 Ваш ответ: ${escapeHtml(userDisplay)}<br>Правильный ответ: ${escapeHtml(correctText)}<br>💡 Пояснение: ${escapeHtml(explanation)}`;
+    }
+    
+    // Прокрутка к обратной связи
+    feedbackDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 function renderCurrentQuestion() {
@@ -175,10 +194,14 @@ function renderCurrentQuestion() {
         return;
     }
     const q = QUESTIONS[currentIndex];
+    waitingForNext = false;
+    nextBtn.disabled = true; // сначала кнопка "Далее" заблокирована, пока не ответят
+    
     if (q.type === 'choice') renderChoiceQuestion(q, currentIndex);
     else if (q.type === 'reorder') renderReorderQuestion(q, currentIndex);
     else if (q.type === 'error_case') renderErrorQuestion(q, currentIndex);
     else if (q.type === 'write_prompt') renderWritePromptQuestion(q, currentIndex);
+    
     updateProgressAndCounter();
     prevBtn.disabled = (currentIndex === 0);
 }
@@ -194,9 +217,10 @@ function renderChoiceQuestion(q, idx) {
     questionCardDiv.innerHTML = `<div class="question-text">${escapeHtml(q.text)}</div><div class="options-list" id="optionsList">${optsHtml}</div>`;
     document.querySelectorAll('.option').forEach(el => {
         el.addEventListener('click', () => {
+            if (waitingForNext) return; // уже ответили на этот вопрос
             let optIdx = parseInt(el.dataset.optIndex);
             saveChoiceAnswer(idx, optIdx);
-            renderCurrentQuestion();
+            renderCurrentQuestion(); // перерисовываем, чтобы подсветить выбранный и показать feedback
         });
     });
 }
@@ -212,6 +236,7 @@ function renderErrorQuestion(q, idx) {
     questionCardDiv.innerHTML = `<div class="question-text">${escapeHtml(q.text)}</div><div class="options-list" id="optionsList">${optsHtml}</div>`;
     document.querySelectorAll('.option').forEach(el => {
         el.addEventListener('click', () => {
+            if (waitingForNext) return;
             let optIdx = parseInt(el.dataset.optIndex);
             saveErrorAnswer(idx, optIdx);
             renderCurrentQuestion();
@@ -232,11 +257,13 @@ function renderReorderQuestion(q, idx) {
     `;
     const bankDiv = document.getElementById('wordBank');
     const addWord = (word) => {
+        if (waitingForNext) return;
         let newOrder = [...saved, word];
         saveReorderAnswer(idx, newOrder);
         renderCurrentQuestion();
     };
     const removeWordAt = (wordToRemove) => {
+        if (waitingForNext) return;
         let newOrder = saved.filter(w => w !== wordToRemove);
         saveReorderAnswer(idx, newOrder);
         renderCurrentQuestion();
@@ -253,7 +280,11 @@ function renderReorderQuestion(q, idx) {
         });
     }
     const resetBtn = document.getElementById('resetReorderBtn');
-    if (resetBtn) resetBtn.addEventListener('click', () => { saveReorderAnswer(idx, []); renderCurrentQuestion(); });
+    if (resetBtn) resetBtn.addEventListener('click', () => { 
+        if (waitingForNext) return;
+        saveReorderAnswer(idx, []); 
+        renderCurrentQuestion(); 
+    });
 }
 
 function renderWritePromptQuestion(q, idx) {
@@ -267,18 +298,39 @@ function renderWritePromptQuestion(q, idx) {
     const textarea = document.getElementById('promptUserInput');
     const saveBtn = document.getElementById('savePromptBtn');
     saveBtn.addEventListener('click', () => {
+        if (waitingForNext) return;
         let val = textarea.value.trim();
         saveWriteAnswer(idx, val);
         renderCurrentQuestion();
     });
 }
 
-function goPrev() { if (!quizFinished && currentIndex > 0) { currentIndex--; renderCurrentQuestion(); animateCard(); } }
+function goPrev() { 
+    if (!quizFinished && currentIndex > 0 && !waitingForNext) {
+        currentIndex--; 
+        renderCurrentQuestion(); 
+        animateCard(); 
+    } else if (!quizFinished && currentIndex > 0) {
+        // Если на текущем вопросе уже ответили, всё равно можно вернуться
+        currentIndex--; 
+        renderCurrentQuestion(); 
+        animateCard();
+    }
+}
 
 function goNext() {
     if (quizFinished) return;
-    if (currentIndex < QUESTIONS.length - 1) { currentIndex++; renderCurrentQuestion(); animateCard(); }
-    else if (currentIndex === QUESTIONS.length - 1) { currentIndex++; finishQuizAndShowResults(); }
+    // Можно переходить, только если на текущем вопросе уже ответили
+    if (waitingForNext || userAnswers[currentIndex] !== null) {
+        if (currentIndex < QUESTIONS.length - 1) { 
+            currentIndex++; 
+            renderCurrentQuestion(); 
+            animateCard(); 
+        } else if (currentIndex === QUESTIONS.length - 1) { 
+            currentIndex++; 
+            finishQuizAndShowResults(); 
+        }
+    }
 }
 
 function animateCard() {
@@ -290,72 +342,6 @@ function animateCard() {
             questionCardDiv.style.transform = 'translateX(0)';
         }
     }, 100);
-}
-
-// ГЕНЕРАЦИЯ PDF С ГАРАНТИРОВАННЫМ СКАЧИВАНИЕМ (через Blob + data URL)
-function generateAndDownloadPDF(score, total, percent, details) {
-    // Создаём HTML-разметку для PDF (через iframe и print - неудобно)
-    // Используем простой и надёжный способ: создаём Blob с типом application/pdf, но с HTML-содержимым,
-    // которое браузер откроет для печати, но мы сохраним как .pdf.
-    // Но чтобы реально скачать PDF-файл, используем библиотеку html2pdf? Не нужно усложнять.
-    // Самый простой способ: сгенерировать текстовый отчёт с расширением .pdf, но это будет не настоящий PDF.
-    // Чтобы скачивание точно работало на GitHub Pages, сделаем так: создаём ссылку на data:text/html,
-    // а пользователь сохранит как PDF через печать. Но это неудобно.
-    // Делаем честный PDF через jsPDF с полной гарантией загрузки (встроим скрипт синхронно).
-    
-    // Динамически подключаем jsPDF и после загрузки сразу генерируем и скачиваем
-    if (window.jspdf && window.jspdf.jsPDF) {
-        generatePDFWithJSPDF(score, total, percent, details);
-    } else {
-        const script = document.createElement('script');
-        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-        script.onload = () => {
-            generatePDFWithJSPDF(score, total, percent, details);
-        };
-        script.onerror = () => {
-            // fallback: скачивание текстового файла .pdf (псевдо)
-            alert('Библиотека PDF не загрузилась, но вы можете скопировать результаты со страницы');
-            const fallbackContent = `Check-list.pdf\nРезультат: ${score}/${total} (${percent}%)\n\n` + 
-                details.map((d,i) => `${i+1}. ${d.text}\n   Ваш ответ: ${d.user}\n   Правильно: ${d.correctAnswer}\n   Пояснение: ${d.explanation}\n`).join('\n');
-            const blob = new Blob([fallbackContent], {type: 'application/pdf'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'Check-list.pdf';
-            a.click();
-            URL.revokeObjectURL(url);
-        };
-        document.head.appendChild(script);
-    }
-}
-
-function generatePDFWithJSPDF(score, total, percent, details) {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-    doc.setFont("courier");
-    doc.setFontSize(16);
-    doc.text("Check-list.pdf", 20, 20);
-    doc.setFontSize(12);
-    doc.text(`Результат квиза: ${score} / ${total} (${percent}%)`, 20, 35);
-    let y = 50;
-    for (let i = 0; i < details.length; i++) {
-        let status = details[i].correct ? "+" : "-";
-        let shortQ = details[i].text.length > 55 ? details[i].text.slice(0, 52) + "..." : details[i].text;
-        doc.text(`${status} ${i + 1}. ${shortQ}`, 20, y);
-        y += 6;
-        let userTxt = (details[i].user.length > 65) ? details[i].user.slice(0, 62) + "..." : details[i].user;
-        doc.text(`   Ваш ответ: ${userTxt}`, 22, y);
-        y += 5;
-        let correctTxt = (details[i].correctAnswer.length > 65) ? details[i].correctAnswer.slice(0, 62) + "..." : details[i].correctAnswer;
-        doc.text(`   Правильно: ${correctTxt}`, 22, y);
-        y += 5;
-        let explanationTxt = (details[i].explanation.length > 65) ? details[i].explanation.slice(0, 62) + "..." : details[i].explanation;
-        doc.text(`   Пояснение: ${explanationTxt}`, 22, y);
-        y += 7;
-        if (y > 270) { doc.addPage(); y = 20; }
-    }
-    // Сохраняем PDF
-    doc.save('Check-list.pdf');
 }
 
 function finishQuizAndShowResults() {
@@ -409,20 +395,20 @@ function finishQuizAndShowResults() {
         resultHtml += `<div style="margin-bottom:1rem; border-bottom:1px solid #c7bb9b; padding-bottom:0.8rem;">
             <strong>${i + 1}. ${escapeHtml(d.text)}</strong><br>
             <span style="color:${d.correct ? '#2b5e2b' : '#b13e3e'}; font-weight:bold;">${d.correct ? '[+] ВЕРНО' : '[-] НЕВЕРНО'}</span><br>
-            Ваш ответ: ${escapeHtml(d.user.substring(0, 100))}<br>
-            Правильный ответ: ${escapeHtml(d.correctAnswer)}<br>
-            Пояснение: ${escapeHtml(d.explanation)}
+            📝 Ваш ответ: ${escapeHtml(d.user.substring(0, 100))}<br>
+            ✅ Правильный ответ: ${escapeHtml(d.correctAnswer)}<br>
+            💡 Пояснение: ${escapeHtml(d.explanation)}
         </div>`;
     });
     resultHtml += `</div><div id="pdfDownloadZone"></div></div>`;
     resultContainer.innerHTML = resultHtml;
     resultContainer.style.display = 'block';
     
-    // === ПРЯМАЯ ССЫЛКА НА GOOGLE DRIVE ===
+    // Прямая ссылка на Google Диск для скачивания PDF
     const downloadLink = document.createElement('a');
     downloadLink.href = 'https://drive.google.com/uc?export=download&id=17kjgxvVVRkXygskbM0nWl0iIkfpF5OJg';
     downloadLink.download = 'Check-list.pdf';
-    downloadLink.innerText = 'Скачать чек-лист по промтингу.PDF';
+    downloadLink.innerText = 'Скачать чек-лист для промтинга';
     downloadLink.className = 'download-link';
     downloadLink.style.width = '100%';
     downloadLink.style.marginTop = '1rem';
