@@ -175,12 +175,12 @@ function showInstantFeedback(questionIdx) {
         feedbackDiv.style.background = '#e6f4e6';
         feedbackDiv.style.borderLeftColor = '#2b5e2b';
         feedbackDiv.style.color = '#1e3a1e';
-        feedbackDiv.innerHTML = `<strong>ВЕРНО!</strong><br>📝 Пояснение: ${escapeHtml(explanation)}`;
+        feedbackDiv.innerHTML = `✅ <strong>ВЕРНО!</strong><br>📝 Пояснение: ${escapeHtml(explanation)}`;
     } else {
         feedbackDiv.style.background = '#ffe6e6';
         feedbackDiv.style.borderLeftColor = '#b13e3e';
         feedbackDiv.style.color = '#5e1e1e';
-        feedbackDiv.innerHTML = `<strong>НЕВЕРНО!</strong><br>📝 Ваш ответ: ${escapeHtml(userDisplay)}<br>Правильный ответ: ${escapeHtml(correctText)}<br>💡 Пояснение: ${escapeHtml(explanation)}`;
+        feedbackDiv.innerHTML = `❌ <strong>НЕВЕРНО!</strong><br>📝 Ваш ответ: ${escapeHtml(userDisplay)}<br>✅ Правильный ответ: ${escapeHtml(correctText)}<br>💡 Пояснение: ${escapeHtml(explanation)}`;
     }
     
     // Прокрутка к обратной связи
@@ -293,7 +293,7 @@ function renderWritePromptQuestion(q, idx) {
         <div class="question-text">${escapeHtml(q.text)}</div>
         <div class="prompt-builder"><textarea id="promptUserInput" class="prompt-input" rows="3" placeholder="Напиши свой промпт...">${escapeHtml(savedValue)}</textarea>
         <button id="savePromptBtn" class="check-prompt-btn">СОХРАНИТЬ ПРОМПТ</button>
-        <div class="example-area">Пример хорошего промпта: ${escapeHtml(q.correctExample)}</div></div>
+        <div class="example-area">💡 Пример хорошего промпта: ${escapeHtml(q.correctExample)}</div></div>
     `;
     const textarea = document.getElementById('promptUserInput');
     const saveBtn = document.getElementById('savePromptBtn');
@@ -395,9 +395,9 @@ function finishQuizAndShowResults() {
         resultHtml += `<div style="margin-bottom:1rem; border-bottom:1px solid #c7bb9b; padding-bottom:0.8rem;">
             <strong>${i + 1}. ${escapeHtml(d.text)}</strong><br>
             <span style="color:${d.correct ? '#2b5e2b' : '#b13e3e'}; font-weight:bold;">${d.correct ? '[+] ВЕРНО' : '[-] НЕВЕРНО'}</span><br>
-            📝 Ваш ответ: ${escapeHtml(d.user.substring(0, 100))}<br>
-            ✅ Правильный ответ: ${escapeHtml(d.correctAnswer)}<br>
-            💡 Пояснение: ${escapeHtml(d.explanation)}
+            Ваш ответ: ${escapeHtml(d.user.substring(0, 100))}<br>
+            Правильный ответ: ${escapeHtml(d.correctAnswer)}<br>
+            Пояснение: ${escapeHtml(d.explanation)}
         </div>`;
     });
     resultHtml += `</div><div id="pdfDownloadZone"></div></div>`;
@@ -408,7 +408,7 @@ function finishQuizAndShowResults() {
     const downloadLink = document.createElement('a');
     downloadLink.href = 'https://drive.google.com/uc?export=download&id=17kjgxvVVRkXygskbM0nWl0iIkfpF5OJg';
     downloadLink.download = 'Check-list.pdf';
-    downloadLink.innerText = 'Скачать чек-лист для промтинга';
+    downloadLink.innerText = 'Получить чек-лист по промтингу';
     downloadLink.className = 'download-link';
     downloadLink.style.width = '100%';
     downloadLink.style.marginTop = '1rem';
