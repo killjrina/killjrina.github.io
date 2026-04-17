@@ -66,7 +66,6 @@ const QUESTIONS = [
 let currentIndex = 0;
 let userAnswers = new Array(QUESTIONS.length).fill(null);
 let quizFinished = false;
-let waitingForNext = false; // блокировка кнопки "Далее" после ответа до ручного перехода
 
 const questionCardDiv = document.getElementById('questionCard');
 const prevBtn = document.getElementById('prevBtn');
@@ -97,40 +96,32 @@ function updateProgressAndCounter() {
     }
 }
 
-// Сохранение ответов с мгновенной обратной связью
+// Сохранение ответов
 function saveReorderAnswer(questionIdx, orderArray) {
     userAnswers[questionIdx] = { type: 'reorder', value: orderArray };
     updateProgressAndCounter();
     showInstantFeedback(questionIdx);
-    waitingForNext = true;
-    nextBtn.disabled = false; // разрешаем переход дальше
 }
 
 function saveWriteAnswer(questionIdx, text) {
     userAnswers[questionIdx] = { type: 'write', value: text };
     updateProgressAndCounter();
     showInstantFeedback(questionIdx);
-    waitingForNext = true;
-    nextBtn.disabled = false;
 }
 
 function saveChoiceAnswer(questionIdx, choiceIdx) {
     userAnswers[questionIdx] = { type: 'choice', value: choiceIdx };
     updateProgressAndCounter();
     showInstantFeedback(questionIdx);
-    waitingForNext = true;
-    nextBtn.disabled = false;
 }
 
 function saveErrorAnswer(questionIdx, choiceIdx) {
     userAnswers[questionIdx] = { type: 'error', value: choiceIdx };
     updateProgressAndCounter();
     showInstantFeedback(questionIdx);
-    waitingForNext = true;
-    nextBtn.disabled = false;
 }
 
-// Мгновенная обратная связь: показывает правильно или нет + пояснение
+// Мгновенная обратная связь
 function showInstantFeedback(questionIdx) {
     const q = QUESTIONS[questionIdx];
     const answer = userAnswers[questionIdx];
@@ -159,7 +150,6 @@ function showInstantFeedback(questionIdx) {
         correctText = q.correctExample;
     }
     
-    // Создаём или обновляем блок обратной связи
     let feedbackDiv = document.getElementById('instantFeedback');
     if (!feedbackDiv) {
         feedbackDiv = document.createElement('div');
@@ -182,166 +172,127 @@ function showInstantFeedback(questionIdx) {
         feedbackDiv.style.color = '#5e1e1e';
         feedbackDiv.innerHTML = `❌ <strong>НЕВЕРНО!</strong><br>📝 Ваш ответ: ${escapeHtml(userDisplay)}<br>✅ Правильный ответ: ${escapeHtml(correctText)}<br>💡 Пояснение: ${escapeHtml(explanation)}`;
     }
-    
-    // Прокрутка к обратной связи
-    feedbackDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
+// Отрисовка вопроса (без удаления обратной связи)
 function renderCurrentQuestion() {
     if (quizFinished) return;
     if (currentIndex >= QUESTIONS.length) {
         finishQuizAndShowResults();
         return;
     }
-    const q = QUESTIONS[currentIndex];
-    waitingForNext = false;
-    nextBtn.disabled = true; // сначала кнопка "Далее" заблокирована, пока не ответят
     
-    if (q.type === 'choice') renderChoiceQuestion(q, currentIndex);
-    else if (q.type === 'reorder') renderReorderQuestion(q, currentIndex);
-    else if (q.type === 'error_case') renderErrorQuestion(q, currentIndex);
-    else if (q.type === 'write_prompt') renderWritePromptQuestion(q, currentIndex);
+    const q = QUESTIONS[currentIndex];
+    let html = `<div class="question-text">${escapeHtml(q.text)}</div>`;
+    
+    if (q.type === 'choice' || q.type === 'error_case') {
+        let saved = userAnswers[currentIndex]?.value;
+        let prefixes = ['A', 'B', 'C', 'D'];
+        let optsHtml = '';
+        q.options.forEach((opt, i) => {
+            let isSelected = (saved === i);
+            optsHtml += `<div class="option ${isSelected ? 'selected' : ''}" data-opt-index="${i}"><span class="option-prefix">${prefixes[i]}</span><span>${escapeHtml(opt)}</span></div>`;
+        });
+        html += `<div class="options-list" id="optionsList">${optsHtml}</div>`;
+    }
+    else if (q.type === 'reorder') {
+        let saved = userAnswers[currentIndex]?.value || [];
+        let shuffledBank = shuffleArray([...q.wordsBank]);
+        let bankHtml = shuffledBank.map(word => `<div class="word-token" data-word="${word}">${escapeHtml(word)}</div>`).join('');
+        let builtHtml = saved.map((word, i) => `<div class="placed-word" data-pos="${i}">${escapeHtml(word)}<span class="remove-word" data-word="${word}">✖</span></div>`).join('');
+        html += `
+            <div class="prompt-builder">
+                <div class="word-bank" id="wordBank">${bankHtml}</div>
+                <div><strong>Твой промпт (порядок):</strong></div>
+                <div class="sentence-builder" id="sentenceBuilder">${builtHtml || 'Нажми на слова, чтобы собрать'}</div>
+                <button id="resetReorderBtn" style="margin-top:10px;">СБРОСИТЬ ПОРЯДОК</button>
+            </div>
+        `;
+    }
+    else if (q.type === 'write_prompt') {
+        let savedValue = userAnswers[currentIndex]?.value || '';
+        html += `
+            <div class="prompt-builder">
+                <textarea id="promptUserInput" class="prompt-input" rows="3" placeholder="Напиши свой промпт...">${escapeHtml(savedValue)}</textarea>
+                <button id="savePromptBtn" class="check-prompt-btn">СОХРАНИТЬ ПРОМПТ</button>
+                <div class="example-area">💡 Пример хорошего промпта: ${escapeHtml(q.correctExample)}</div>
+            </div>
+        `;
+    }
+    
+    questionCardDiv.innerHTML = html;
+    
+    // Навешиваем обработчики после вставки HTML
+    if (q.type === 'choice' || q.type === 'error_case') {
+        document.querySelectorAll('.option').forEach(el => {
+            el.addEventListener('click', () => {
+                let optIdx = parseInt(el.dataset.optIndex);
+                if (q.type === 'choice') saveChoiceAnswer(currentIndex, optIdx);
+                else saveErrorAnswer(currentIndex, optIdx);
+                renderCurrentQuestion(); // перерисовываем для подсветки выбранного
+            });
+        });
+    }
+    else if (q.type === 'reorder') {
+        const bankDiv = document.getElementById('wordBank');
+        const addWord = (word) => {
+            let newOrder = [...(userAnswers[currentIndex]?.value || []), word];
+            saveReorderAnswer(currentIndex, newOrder);
+            renderCurrentQuestion();
+        };
+        const removeWordAt = (wordToRemove) => {
+            let newOrder = (userAnswers[currentIndex]?.value || []).filter(w => w !== wordToRemove);
+            saveReorderAnswer(currentIndex, newOrder);
+            renderCurrentQuestion();
+        };
+        if (bankDiv) {
+            Array.from(bankDiv.querySelectorAll('.word-token')).forEach(token => {
+                token.addEventListener('click', () => { addWord(token.dataset.word); });
+            });
+        }
+        const builderDiv = document.getElementById('sentenceBuilder');
+        if (builderDiv) {
+            Array.from(builderDiv.querySelectorAll('.remove-word')).forEach(btn => {
+                btn.addEventListener('click', (e) => { e.stopPropagation(); removeWordAt(btn.dataset.word); });
+            });
+        }
+        const resetBtn = document.getElementById('resetReorderBtn');
+        if (resetBtn) resetBtn.addEventListener('click', () => { 
+            saveReorderAnswer(currentIndex, []); 
+            renderCurrentQuestion(); 
+        });
+    }
+    else if (q.type === 'write_prompt') {
+        const saveBtn = document.getElementById('savePromptBtn');
+        if (saveBtn) {
+            saveBtn.addEventListener('click', () => {
+                let val = document.getElementById('promptUserInput').value.trim();
+                saveWriteAnswer(currentIndex, val);
+                renderCurrentQuestion();
+            });
+        }
+    }
     
     updateProgressAndCounter();
     prevBtn.disabled = (currentIndex === 0);
-}
-
-function renderChoiceQuestion(q, idx) {
-    let saved = userAnswers[idx]?.value;
-    let optsHtml = '';
-    let prefixes = ['A', 'B', 'C', 'D'];
-    q.options.forEach((opt, i) => {
-        let isSelected = (saved === i);
-        optsHtml += `<div class="option ${isSelected ? 'selected' : ''}" data-opt-index="${i}"><span class="option-prefix">${prefixes[i]}</span><span>${escapeHtml(opt)}</span></div>`;
-    });
-    questionCardDiv.innerHTML = `<div class="question-text">${escapeHtml(q.text)}</div><div class="options-list" id="optionsList">${optsHtml}</div>`;
-    document.querySelectorAll('.option').forEach(el => {
-        el.addEventListener('click', () => {
-            if (waitingForNext) return; // уже ответили на этот вопрос
-            let optIdx = parseInt(el.dataset.optIndex);
-            saveChoiceAnswer(idx, optIdx);
-            renderCurrentQuestion(); // перерисовываем, чтобы подсветить выбранный и показать feedback
-        });
-    });
-}
-
-function renderErrorQuestion(q, idx) {
-    let saved = userAnswers[idx]?.value;
-    let optsHtml = '';
-    let prefixes = ['A', 'B', 'C', 'D'];
-    q.options.forEach((opt, i) => {
-        let isSelected = (saved === i);
-        optsHtml += `<div class="option ${isSelected ? 'selected' : ''}" data-opt-index="${i}"><span class="option-prefix">${prefixes[i]}</span><span>${escapeHtml(opt)}</span></div>`;
-    });
-    questionCardDiv.innerHTML = `<div class="question-text">${escapeHtml(q.text)}</div><div class="options-list" id="optionsList">${optsHtml}</div>`;
-    document.querySelectorAll('.option').forEach(el => {
-        el.addEventListener('click', () => {
-            if (waitingForNext) return;
-            let optIdx = parseInt(el.dataset.optIndex);
-            saveErrorAnswer(idx, optIdx);
-            renderCurrentQuestion();
-        });
-    });
-}
-
-function renderReorderQuestion(q, idx) {
-    let saved = userAnswers[idx]?.value || [];
-    let shuffledBank = shuffleArray([...q.wordsBank]);
-    let bankHtml = shuffledBank.map(word => `<div class="word-token" data-word="${word}">${escapeHtml(word)}</div>`).join('');
-    let builtHtml = saved.map((word, i) => `<div class="placed-word" data-pos="${i}">${escapeHtml(word)}<span class="remove-word" data-word="${word}">✖</span></div>`).join('');
-    questionCardDiv.innerHTML = `
-        <div class="question-text">${escapeHtml(q.text)}</div>
-        <div class="prompt-builder"><div class="word-bank" id="wordBank">${bankHtml}</div>
-        <div><strong>Твой промпт (порядок):</strong></div><div class="sentence-builder" id="sentenceBuilder">${builtHtml || 'Нажми на слова, чтобы собрать'}</div>
-        <button id="resetReorderBtn" style="margin-top:10px;">СБРОСИТЬ ПОРЯДОК</button></div>
-    `;
-    const bankDiv = document.getElementById('wordBank');
-    const addWord = (word) => {
-        if (waitingForNext) return;
-        let newOrder = [...saved, word];
-        saveReorderAnswer(idx, newOrder);
-        renderCurrentQuestion();
-    };
-    const removeWordAt = (wordToRemove) => {
-        if (waitingForNext) return;
-        let newOrder = saved.filter(w => w !== wordToRemove);
-        saveReorderAnswer(idx, newOrder);
-        renderCurrentQuestion();
-    };
-    if (bankDiv) {
-        Array.from(bankDiv.querySelectorAll('.word-token')).forEach(token => {
-            token.addEventListener('click', () => { addWord(token.dataset.word); });
-        });
-    }
-    const builderDiv = document.getElementById('sentenceBuilder');
-    if (builderDiv) {
-        Array.from(builderDiv.querySelectorAll('.remove-word')).forEach(btn => {
-            btn.addEventListener('click', (e) => { e.stopPropagation(); removeWordAt(btn.dataset.word); });
-        });
-    }
-    const resetBtn = document.getElementById('resetReorderBtn');
-    if (resetBtn) resetBtn.addEventListener('click', () => { 
-        if (waitingForNext) return;
-        saveReorderAnswer(idx, []); 
-        renderCurrentQuestion(); 
-    });
-}
-
-function renderWritePromptQuestion(q, idx) {
-    let savedValue = userAnswers[idx]?.value || '';
-    questionCardDiv.innerHTML = `
-        <div class="question-text">${escapeHtml(q.text)}</div>
-        <div class="prompt-builder"><textarea id="promptUserInput" class="prompt-input" rows="3" placeholder="Напиши свой промпт...">${escapeHtml(savedValue)}</textarea>
-        <button id="savePromptBtn" class="check-prompt-btn">СОХРАНИТЬ ПРОМПТ</button>
-        <div class="example-area">💡 Пример хорошего промпта: ${escapeHtml(q.correctExample)}</div></div>
-    `;
-    const textarea = document.getElementById('promptUserInput');
-    const saveBtn = document.getElementById('savePromptBtn');
-    saveBtn.addEventListener('click', () => {
-        if (waitingForNext) return;
-        let val = textarea.value.trim();
-        saveWriteAnswer(idx, val);
-        renderCurrentQuestion();
-    });
+    nextBtn.disabled = false;
 }
 
 function goPrev() { 
-    if (!quizFinished && currentIndex > 0 && !waitingForNext) {
+    if (!quizFinished && currentIndex > 0) {
         currentIndex--; 
         renderCurrentQuestion(); 
-        animateCard(); 
-    } else if (!quizFinished && currentIndex > 0) {
-        // Если на текущем вопросе уже ответили, всё равно можно вернуться
-        currentIndex--; 
-        renderCurrentQuestion(); 
-        animateCard();
     }
 }
 
 function goNext() {
     if (quizFinished) return;
-    // Можно переходить, только если на текущем вопросе уже ответили
-    if (waitingForNext || userAnswers[currentIndex] !== null) {
-        if (currentIndex < QUESTIONS.length - 1) { 
-            currentIndex++; 
-            renderCurrentQuestion(); 
-            animateCard(); 
-        } else if (currentIndex === QUESTIONS.length - 1) { 
-            currentIndex++; 
-            finishQuizAndShowResults(); 
-        }
+    if (currentIndex < QUESTIONS.length - 1) { 
+        currentIndex++; 
+        renderCurrentQuestion(); 
+    } else if (currentIndex === QUESTIONS.length - 1) { 
+        finishQuizAndShowResults(); 
     }
-}
-
-function animateCard() {
-    questionCardDiv.style.opacity = '0.7';
-    questionCardDiv.style.transform = 'translateX(5px)';
-    setTimeout(() => {
-        if (questionCardDiv) {
-            questionCardDiv.style.opacity = '1';
-            questionCardDiv.style.transform = 'translateX(0)';
-        }
-    }, 100);
 }
 
 function finishQuizAndShowResults() {
@@ -404,7 +355,6 @@ function finishQuizAndShowResults() {
     resultContainer.innerHTML = resultHtml;
     resultContainer.style.display = 'block';
     
-    // Прямая ссылка на Google Диск для скачивания PDF
     const downloadLink = document.createElement('a');
     downloadLink.href = 'https://drive.google.com/uc?export=download&id=17kjgxvVVRkXygskbM0nWl0iIkfpF5OJg';
     downloadLink.download = 'Check-list.pdf';
